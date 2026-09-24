@@ -518,5 +518,10 @@
     <string name="use_angle_checkbox">Use ANGLE (might help FPS)</string>
 
     <string name="preference_vr_mode_title">Launch in VR</string>
-    <string name="preference_vr_mode_description">Start the game as an immersive OpenXR app (Meta Quest). Needs the QuestCraft Vivecraft (OpenXR) mod.</string>
+    <string name="preference_vr_mode_description">Start the game as an immersive OpenXR app (Meta Quest). Vivecraft and the other VR mods are installed automatically for Fabric profiles.</string>
+    <string name="preference_vr_dev_mods_title">Use development VR mods</string>
+    <string name="preference_vr_dev_mods_description">Install the VR mod set from devmods.json instead of mods.json, for testing new mod versions.</string>
+    <string name="vr_mods_downloading">Downloading VR mod %s</string>
+    <string name="vr_needs_fabric">VR needs a Fabric profile, but %s is not one. Pick a Fabric version, or turn off \"Launch in VR\" in the experimental settings.</string>
+    <string name="vr_no_mod_set">There is no VR mod set for Minecraft %s yet. Pick a supported version, or turn off \"Launch in VR\" in the experimental settings.</string>
 </resources>

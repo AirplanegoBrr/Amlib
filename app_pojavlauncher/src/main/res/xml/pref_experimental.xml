@@ -10,6 +10,12 @@
             android:summary="@string/preference_vr_mode_description"
             />
         <SwitchPreferenceCompat
+            android:key="vrDevMods"
+            android:dependency="vrMode"
+            android:title="@string/preference_vr_dev_mods_title"
+            android:summary="@string/preference_vr_dev_mods_description"
+            />
+        <SwitchPreferenceCompat
             android:key="dump_shaders"
             android:title="@string/preference_shader_dump_title"
             android:summary="@string/preference_shader_dump_description"

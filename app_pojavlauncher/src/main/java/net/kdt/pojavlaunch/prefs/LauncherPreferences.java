@@ -42,6 +42,7 @@ public class LauncherPreferences {
     public static boolean PREF_DISABLE_GESTURES = false;
     public static boolean PREF_GAMEPAD_FORCEDSDL_PASSTHRU = false;
     public static boolean PREF_VR_MODE = false;
+    public static boolean PREF_VR_DEV_MODS = false;
     public static boolean PREF_DISABLE_SWAP_HAND = false;
     public static float PREF_MOUSESPEED = 1f;
     public static int PREF_RAM_ALLOCATION;
@@ -95,6 +96,7 @@ public class LauncherPreferences {
         // Default on for Meta headsets; stored so the settings switch shows the real value
         if(!DEFAULT_PREF.contains("vrMode")) DEFAULT_PREF.edit().putBoolean("vrMode", VRMode.isMetaHeadset()).apply();
         PREF_VR_MODE = DEFAULT_PREF.getBoolean("vrMode", false);
+        PREF_VR_DEV_MODS = DEFAULT_PREF.getBoolean("vrDevMods", false);
         PREF_DISABLE_SWAP_HAND = DEFAULT_PREF.getBoolean("disableDoubleTap", false);
         PREF_RAM_ALLOCATION = DEFAULT_PREF.getInt("allocation", findBestRAMAllocation(ctx));
         PREF_CUSTOM_JAVA_ARGS = DEFAULT_PREF.getString("javaArgs", "");

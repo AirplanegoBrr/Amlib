@@ -84,7 +84,6 @@ public class VRGameActivity extends BaseActivity implements ServiceConnection {
         }
 
         setupWindow(gameDir);
-        VRMode.applyVivecraftConfig(gameDir);
 
         mInputManager = new RemapperManager(this, new RemapperView.Builder(null)
                 .remapA(true).remapB(true).remapX(true).remapY(true)

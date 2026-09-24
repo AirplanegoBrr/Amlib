@@ -27,6 +27,8 @@ import net.kdt.pojavlaunch.utils.FileUtils;
 import net.kdt.pojavlaunch.value.DependentLibrary;
 import net.kdt.pojavlaunch.value.MinecraftClientInfo;
 import net.kdt.pojavlaunch.value.MinecraftLibraryArtifact;
+import net.kdt.pojavlaunch.vr.VRMode;
+import net.kdt.pojavlaunch.vr.VRModInstaller;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -87,6 +89,8 @@ public class MinecraftDownloader {
         sExecutorService.execute(() -> {
             try {
                 if(isLocalProfile || !isOnline) {
+                    // Uses cached mods when offline; errors go through onDownloadFailed
+                    syncVRMods(activity, realVersion);
                     String versionMessage = realVersion; // Use provided version unless we find its a modded instance
 
                     // See if provided version is a modded version and if that version depends on another jar, check for presence of both jar's .json.
@@ -110,6 +114,7 @@ public class MinecraftDownloader {
                     }
                 }else {
                 downloadGame(activity, version, realVersion);
+                syncVRMods(activity, realVersion);
                 listener.onDownloadDone();
                 }
             }catch (Exception e) {
@@ -117,6 +122,12 @@ public class MinecraftDownloader {
             }
             ProgressLayout.clearProgress(ProgressLayout.DOWNLOAD_MINECRAFT);
         });
+    }
+
+    /** Install the VR mods for this version when the game is about to launch in VR */
+    private static void syncVRMods(@Nullable Activity activity, String versionId) throws IOException {
+        if(activity == null || !VRMode.shouldLaunchInVR()) return;
+        VRModInstaller.sync(activity, versionId);
     }
 
     /**
