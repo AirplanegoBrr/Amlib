@@ -17,6 +17,7 @@ import net.kdt.pojavlaunch.*;
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;
 import net.kdt.pojavlaunch.utils.FileUtils;
 import net.kdt.pojavlaunch.utils.JREUtils;
+import net.kdt.pojavlaunch.vr.VRMode;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class LauncherPreferences {
     public static boolean PREF_CHECK_LIBRARY_SHA = true;
     public static boolean PREF_DISABLE_GESTURES = false;
     public static boolean PREF_GAMEPAD_FORCEDSDL_PASSTHRU = false;
+    public static boolean PREF_VR_MODE = false;
     public static boolean PREF_DISABLE_SWAP_HAND = false;
     public static float PREF_MOUSESPEED = 1f;
     public static int PREF_RAM_ALLOCATION;
@@ -90,6 +92,9 @@ public class LauncherPreferences {
         PREF_CHECK_LIBRARY_SHA = DEFAULT_PREF.getBoolean("checkLibraries",true);
         PREF_DISABLE_GESTURES = DEFAULT_PREF.getBoolean("disableGestures",false);
         PREF_GAMEPAD_FORCEDSDL_PASSTHRU = DEFAULT_PREF.getBoolean("gamepadPassthruForced",false);
+        // Default on for Meta headsets; stored so the settings switch shows the real value
+        if(!DEFAULT_PREF.contains("vrMode")) DEFAULT_PREF.edit().putBoolean("vrMode", VRMode.isMetaHeadset()).apply();
+        PREF_VR_MODE = DEFAULT_PREF.getBoolean("vrMode", false);
         PREF_DISABLE_SWAP_HAND = DEFAULT_PREF.getBoolean("disableDoubleTap", false);
         PREF_RAM_ALLOCATION = DEFAULT_PREF.getInt("allocation", findBestRAMAllocation(ctx));
         PREF_CUSTOM_JAVA_ARGS = DEFAULT_PREF.getString("javaArgs", "");

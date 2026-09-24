@@ -517,4 +517,6 @@
     <string name="angelica_found_sfpew_notice">Angelica mod found, Simple FPE Wrapper not needed</string>
     <string name="use_angle_checkbox">Use ANGLE (might help FPS)</string>
 
+    <string name="preference_vr_mode_title">Launch in VR</string>
+    <string name="preference_vr_mode_description">Start the game as an immersive OpenXR app (Meta Quest). Needs the QuestCraft Vivecraft (OpenXR) mod.</string>
 </resources>

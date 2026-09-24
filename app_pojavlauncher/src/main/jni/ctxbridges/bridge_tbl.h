@@ -8,6 +8,7 @@
 #include <ctxbridges/common.h>
 #include <ctxbridges/gl_bridge.h>
 #include <ctxbridges/osm_bridge.h>
+#include <ctxbridges/xr_bridge.h>
 
 typedef basic_render_window_t* (*br_init_context_t)(basic_render_window_t* share);
 typedef void (*br_make_current_t)(basic_render_window_t* bundle);
@@ -40,6 +41,16 @@ void set_gl_bridge_tbl() {
     br_swap_buffers = gl_swap_buffers;
     br_setup_window = gl_setup_window;
     br_swap_interval = gl_swap_interval;
+}
+
+void set_xr_bridge_tbl() {
+    br_init = xr_init;
+    br_init_context = (br_init_context_t) xr_init_context;
+    br_make_current = (br_make_current_t) xr_make_current;
+    br_get_current = (br_get_current_t) xr_get_current;
+    br_swap_buffers = xr_swap_buffers;
+    br_setup_window = xr_setup_window;
+    br_swap_interval = xr_swap_interval;
 }
 
 #endif //POJAVLAUNCHER_BRIDGE_TBL_H

@@ -154,6 +154,18 @@ void load_vulkan() {
     set_vulkan_ptr(vulkan_ptr);
 }
 
+/* Set by the launcher when the game runs in the immersive VR activity */
+static bool is_vr_mode() {
+    const char* vr = getenv("AMETHYST_VR");
+    return vr != NULL && strcmp(vr, "1") == 0;
+}
+
+static int env_int(const char* name, int fallback) {
+    const char* value = getenv(name);
+    int parsed = value == NULL ? 0 : (int) strtol(value, NULL, 10);
+    return parsed > 0 ? parsed : fallback;
+}
+
 int pojavInitOpenGL() {
     // Only affects GL4ES as of now
     const char *forceVsync = getenv("FORCE_VSYNC");
@@ -162,7 +174,11 @@ int pojavInitOpenGL() {
 
     // NOTE: Override for now.
     const char *renderer = getenv("AMETHYST_RENDERER");
-    if (strncmp("opengles", renderer, 8) == 0) {
+    if (is_vr_mode() && strncmp("opengles", renderer, 8) == 0) {
+        // No Android window in VR, Vivecraft presents through OpenXR
+        pojav_environ->config_renderer = RENDERER_GL4ES;
+        set_xr_bridge_tbl();
+    } else if (strncmp("opengles", renderer, 8) == 0) {
         pojav_environ->config_renderer = RENDERER_GL4ES;
         if (!strcmp(renderer, "opengles3_desktopgl_zink_kopper")) {
             load_vulkan();
@@ -191,10 +207,16 @@ EXTERNAL_API int pojavInit() {
         printf("Failed to attach Java-side JNIEnv to GLFW thread\n");
         return 0;
     }
-    ANativeWindow_acquire(pojav_environ->pojavWindow);
-    pojav_environ->savedWidth = ANativeWindow_getWidth(pojav_environ->pojavWindow);
-    pojav_environ->savedHeight = ANativeWindow_getHeight(pojav_environ->pojavWindow);
-    ANativeWindow_setBuffersGeometry(pojav_environ->pojavWindow,pojav_environ->savedWidth,pojav_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
+    if (is_vr_mode()) {
+        // Headless: size of Minecraft's (never presented) main framebuffer
+        pojav_environ->savedWidth = env_int("AMETHYST_VR_WIDTH", 1280);
+        pojav_environ->savedHeight = env_int("AMETHYST_VR_HEIGHT", 720);
+    } else {
+        ANativeWindow_acquire(pojav_environ->pojavWindow);
+        pojav_environ->savedWidth = ANativeWindow_getWidth(pojav_environ->pojavWindow);
+        pojav_environ->savedHeight = ANativeWindow_getHeight(pojav_environ->pojavWindow);
+        ANativeWindow_setBuffersGeometry(pojav_environ->pojavWindow,pojav_environ->savedWidth,pojav_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
+    }
     updateMonitorSize(pojav_environ->savedWidth, pojav_environ->savedHeight);
     pojavInitOpenGL();
     return 1;

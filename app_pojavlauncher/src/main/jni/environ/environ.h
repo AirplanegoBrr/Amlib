@@ -77,6 +77,9 @@ struct pojav_environ_s {
     ADD_CALLBACK_WWIN(Scroll);
 
 #undef ADD_CALLBACK_WWIN
+    // Set by net.kdt.pojavlaunch.vr.VLoader, read by Vivecraft through libvloader
+    jobject vrActivity;
+    jclass vrLoaderClass;
 };
 extern struct pojav_environ_s *pojav_environ;
 

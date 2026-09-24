@@ -34,6 +34,8 @@ import net.kdt.pojavlaunch.multirt.Runtime;
 import net.kdt.pojavlaunch.plugins.FFmpegPlugin;
 import net.kdt.pojavlaunch.prefs.*;
 import net.kdt.pojavlaunch.value.launcherprofiles.LauncherProfiles;
+import net.kdt.pojavlaunch.vr.VLoader;
+import net.kdt.pojavlaunch.vr.VRMode;
 
 import org.lwjgl.glfw.*;
 
@@ -206,6 +208,13 @@ public class JREUtils {
         envMap.put("LIBGL_ES", (String) ExtraCore.getValue(ExtraConstants.OPEN_GL_VERSION));
 
         envMap.put("FORCE_VSYNC", String.valueOf(LauncherPreferences.PREF_FORCE_VSYNC));
+
+        if(VRMode.sRunningInVR) {
+            // Headless rendering, see ctxbridges/xr_bridge.c
+            envMap.put("AMETHYST_VR", "1");
+            envMap.put("AMETHYST_VR_WIDTH", String.valueOf(VRMode.WINDOW_WIDTH));
+            envMap.put("AMETHYST_VR_HEIGHT", String.valueOf(VRMode.WINDOW_HEIGHT));
+        }
 
         envMap.put("MESA_GLSL_CACHE_DIR", Tools.DIR_CACHE.getAbsolutePath());
         envMap.put("force_glsl_extensions_warn", "true");
@@ -414,6 +423,8 @@ public class JREUtils {
         JREUtils.initializeHooks();
         chdir(gameDirectory == null ? Tools.DIR_GAME_NEW : gameDirectory.getAbsolutePath());
         userArgs.add(0,"java"); //argv[0] is the program name according to C standard.
+        // Hands the activity to Vivecraft's OpenXR bridge; no-op where libvloader isn't built
+        VLoader.setAndroidInitInfo(activity);
 
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
         Logger.appendToLog("Java Exit code: " + exitCode);
@@ -456,8 +467,8 @@ public class JREUtils {
                 //"-Dorg.lwjgl.util.DebugFunctions=true",
                 //"-Dorg.lwjgl.util.DebugLoader=true",
                 // GLFW Stub width height
-                "-Dglfwstub.windowWidth=" + Tools.getDisplayFriendlyRes(currentDisplayMetrics.widthPixels, LauncherPreferences.PREF_SCALE_FACTOR),
-                "-Dglfwstub.windowHeight=" + Tools.getDisplayFriendlyRes(currentDisplayMetrics.heightPixels, LauncherPreferences.PREF_SCALE_FACTOR),
+                "-Dglfwstub.windowWidth=" + (VRMode.sRunningInVR ? VRMode.WINDOW_WIDTH : Tools.getDisplayFriendlyRes(currentDisplayMetrics.widthPixels, LauncherPreferences.PREF_SCALE_FACTOR)),
+                "-Dglfwstub.windowHeight=" + (VRMode.sRunningInVR ? VRMode.WINDOW_HEIGHT : Tools.getDisplayFriendlyRes(currentDisplayMetrics.heightPixels, LauncherPreferences.PREF_SCALE_FACTOR)),
                 "-Dglfwstub.initEgl=false",
                 "-Dext.net.resolvPath=" +resolvFile,
                 "-Dlog4j2.formatMsgNoLookups=true", //Log4j RCE mitigation

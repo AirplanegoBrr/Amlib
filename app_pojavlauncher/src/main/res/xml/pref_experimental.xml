@@ -5,6 +5,11 @@
     <PreferenceCategory android:title="@string/preference_category_experimental_settings">
 
         <SwitchPreferenceCompat
+            android:key="vrMode"
+            android:title="@string/preference_vr_mode_title"
+            android:summary="@string/preference_vr_mode_description"
+            />
+        <SwitchPreferenceCompat
             android:key="dump_shaders"
             android:title="@string/preference_shader_dump_title"
             android:summary="@string/preference_shader_dump_description"

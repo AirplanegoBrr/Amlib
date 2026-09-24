@@ -24,6 +24,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- OpenXR on Meta Quest, used by the "Launch in VR" mode (vr.VRGameActivity) -->
+    <uses-feature
+        android:name="android.hardware.vr.headtracking"
+        android:required="false"
+        android:version="1" />
+    <uses-permission android:name="org.khronos.openxr.permission.OPENXR" />
+    <uses-permission android:name="org.khronos.openxr.permission.OPENXR_SYSTEM" />
     <meta-data android:name="android.game_mode_config"
         android:resource="@xml/game_mode_config" />
     <application
@@ -116,6 +124,24 @@
             android:process=":game"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="sensorLandscape" />
+        <!-- Immersive game screen for Meta Quest; the launcher stays a 2D panel -->
+        <activity
+            android:name=".vr.VRGameActivity"
+            android:configChanges="density|keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:process=":game"
+            android:resizeableActivity="false"
+            android:screenOrientation="landscape"
+            android:taskAffinity="${applicationId}.vr">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.oculus.intent.category.VR" />
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="com.oculus.supportedDevices"
+            android:value="quest2|questpro|quest3|quest3s" />
 
         <provider
             android:name=".scoped.FolderProvider"
@@ -138,5 +164,13 @@
     </application>
     <queries>
         <package android:name="net.kdt.pojavlaunch.ffmpeg"/>
+        <!-- Lets the OpenXR loader find the active runtime -->
+        <provider android:authorities="org.khronos.openxr.runtime_broker;org.khronos.openxr.system_runtime_broker" />
+        <intent>
+            <action android:name="org.khronos.openxr.OpenXRRuntimeService" />
+        </intent>
+        <intent>
+            <action android:name="org.khronos.openxr.OpenXRApiLayerService" />
+        </intent>
     </queries>
 </manifest>

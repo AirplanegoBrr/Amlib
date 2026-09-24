@@ -29,6 +29,7 @@ LOCAL_SRC_FILES := \
     egl_bridge.c \
     ctxbridges/loader_dlopen.c \
     ctxbridges/gl_bridge.c \
+    ctxbridges/xr_bridge.c \
     ctxbridges/osm_bridge.c \
     ctxbridges/egl_loader.c \
     ctxbridges/osmesa_loader.c \
@@ -46,6 +47,23 @@ ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 LOCAL_CFLAGS += -DADRENO_POSSIBLE
 endif
 include $(BUILD_SHARED_LIBRARY)
+
+# OpenXR loader + Vivecraft bridge, only shipped for arm64 (the only prebuilt loader we have)
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+include $(CLEAR_VARS)
+LOCAL_MODULE := openxr_loader
+LOCAL_SRC_FILES := prebuilt/openxr_loader/$(TARGET_ARCH_ABI)/libopenxr_loader.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := vloader
+LOCAL_LDLIBS := -llog -lEGL
+LOCAL_CFLAGS := -DXR_USE_PLATFORM_ANDROID -DXR_USE_GRAPHICS_API_OPENGL_ES
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
+LOCAL_SHARED_LIBRARIES := pojavexec openxr_loader
+LOCAL_SRC_FILES := vloader.c
+include $(BUILD_SHARED_LIBRARY)
+endif
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := exithook

@@ -25,3 +25,6 @@
  -keep class net.kdt.pojavlaunch.prefs.screens** {*;}
 
 
+
+# Read and written by libvloader through JNI
+-keep class net.kdt.pojavlaunch.vr.VLoader { *; }
