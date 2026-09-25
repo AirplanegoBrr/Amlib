@@ -565,6 +565,13 @@ public class MinecraftDownloader {
         }
 
         private void runCatching() throws Exception {
+            // Hashing thousands of files before every launch takes long on a headset. Every file was
+            // checked against its SHA1 when it was downloaded, and the size catches ones cut short.
+            if(VRMode.shouldLaunchInVR() && mDownloadSize > 0 && mTargetPath.isFile()
+                    && mTargetPath.length() == mDownloadSize) {
+                finishWithoutDownloading();
+                return;
+            }
             if(mDownloadClass == DownloadMirror.DOWNLOAD_CLASS_LIBRARIES && !Tools.isValidString(mTargetSha1)) {
                 // If we're downloading a library, try to get sha1 since it might be available as a file
                 tryGetLibrarySha1();

@@ -515,6 +515,8 @@ public final class Tools {
         for (String modName : sodiumMods) {
             if (hasMods(sodiumMods)) {
                 hasSodiumMod = true;
+                // In VR the game runs on MobileGlues like QuestCraft, where Sodium's chunk renderer works
+                if (VRMode.sRunningInVR) continue;
                 File mixinPropertiesConfigFile = new File(getGameDir(), "config/" + modName + "-mixins.properties");
                 // Write mixin configs to somewhat help stability. We don't want more people complaining.
                 String[] propertiesToAdd = {

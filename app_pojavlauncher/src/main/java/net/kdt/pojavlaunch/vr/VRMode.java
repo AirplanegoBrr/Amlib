@@ -70,7 +70,8 @@ public class VRMode {
             // Its update checker points at upstream Vivecraft, which has no OpenXR/Android support
             obj.addProperty("alwaysShowUpdates", "false");
             obj.addProperty("disableGarbageCollectorMessage", "true");
-            obj.addProperty("seated", "false");
+            // Only a default: players who sit switch to seated mode in Vivecraft's settings
+            if (!obj.has("seated")) obj.addProperty("seated", "false");
             Tools.write(config.getAbsolutePath(), Tools.GLOBAL_GSON.toJson(obj));
         } catch (Exception e) {
             Log.e("VRMode", "Failed to update the Vivecraft config", e);
