@@ -19,8 +19,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.kdt.pojavlaunch.lifecycle.ContextExecutor;
-import net.kdt.pojavlaunch.prefs.LauncherPreferences;
-import net.kdt.pojavlaunch.tasks.AsyncAssetManager;
 import net.kdt.pojavlaunch.utils.*;
 import net.kdt.pojavlaunch.utils.FileUtils;
 
@@ -30,7 +28,6 @@ public class PojavApplication extends Application {
 	
 	@Override
 	public void onCreate() {
-		ContextExecutor.setApplication(this);
 		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
 			boolean storagePermAllowed = (Build.VERSION.SDK_INT < 23 || Build.VERSION.SDK_INT >= 29 ||
 					ActivityCompat.checkSelfPermission(PojavApplication.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && Tools.checkStorageRoot(PojavApplication.this);
@@ -58,24 +55,7 @@ public class PojavApplication extends Application {
 		
 		try {
 			super.onCreate();
-			if(Tools.checkStorageRoot(this)){
-				// Implicitly initializes early constants and storage constants.
-				// Required to run the main activity properly.
-				LauncherPreferences.loadPreferences(this);
-			} else {
-				// In other cases, only initialize enough for the basicmost basics to work
-				// and not explode.
-				Tools.initEarlyConstants(this);
-			}
-			Tools.DEVICE_ARCHITECTURE = Architecture.getDeviceArchitecture();
-			//Force x86 lib directory for Asus x86 based zenfones
-			if(Architecture.isx86Device() && Architecture.is32BitsDevice()){
-				String originalJNIDirectory = getApplicationInfo().nativeLibraryDir;
-				getApplicationInfo().nativeLibraryDir = originalJNIDirectory.substring(0,
-												originalJNIDirectory.lastIndexOf("/"))
-												.concat("/x86");
-			}
-			AsyncAssetManager.unpackRuntime(getAssets());
+			AmlibCore.init(this);
 		} catch (Throwable throwable) {
 			Intent ferrorIntent = new Intent(this, FatalErrorActivity.class);
 			ferrorIntent.putExtra("throwable", throwable);

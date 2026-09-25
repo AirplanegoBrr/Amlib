@@ -20,6 +20,7 @@ import android.system.*;
 import android.util.*;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.oracle.dalvik.*;
@@ -340,7 +341,7 @@ public class JREUtils {
             reader.close();
         }
     }
-    public static void launchJavaVM(final AppCompatActivity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString) throws Throwable {
+    public static void launchJavaVM(final FragmentActivity activity, final Runtime runtime, File gameDirectory, final List<String> JVMArgs, final String userArgsString) throws Throwable {
         String runtimeHome = MultiRTUtils.getRuntimeHome(runtime.name).getAbsolutePath();
 
         JREUtils.relocateLibPath(runtime, runtimeHome);
@@ -428,7 +429,7 @@ public class JREUtils {
 
         final int exitCode = VMLauncher.launchJVM(userArgs.toArray(new String[0]));
         Logger.appendToLog("Java Exit code: " + exitCode);
-        if (exitCode != 0) {
+        if (exitCode != 0 && !VRMode.sRunningInVR) {
             LifecycleAwareAlertDialog.DialogCreator dialogCreator = (dialog, builder)->
                     builder.setMessage(activity.getString(R.string.mcn_exit_title, exitCode))
                     .setPositiveButton(R.string.main_share_logs, (dialogInterface, which)-> shareLog(activity));

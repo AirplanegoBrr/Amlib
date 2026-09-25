@@ -36,5 +36,18 @@ public class VLoader {
         nativeSetAndroidInitInfo(ctx);
     }
 
+    /**
+     * Calls one of the host app's OpenXR functions that take a single handle, such as
+     * xrRequestExitSession, xrDestroySession or xrDestroyInstance. The host looks up the function
+     * pointer with its own loader (Godot: OpenXRAPIExtension.get_instance_proc_addr), since its
+     * handles belong to that loader. Used to release the headset before Vivecraft takes over.
+     * @return the XrResult, or -1 when the VR bridge isn't available
+     */
+    public static int callHostXr(long function, long handle) {
+        if (!sLoaded || function == 0) return -1;
+        return nativeCallHostXr(function, handle);
+    }
+
     private static native void nativeSetAndroidInitInfo(Context ctx);
+    private static native int nativeCallHostXr(long function, long handle);
 }

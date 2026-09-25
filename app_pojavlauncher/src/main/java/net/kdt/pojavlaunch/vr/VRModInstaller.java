@@ -63,14 +63,21 @@ public class VRModInstaller {
             throw new IOException(context.getString(R.string.vr_needs_fabric, versionId));
         }
 
+        MinecraftProfile profile = LauncherProfiles.getCurrentProfile();
+        File gameDir = Tools.getGameDirPath(profile);
+        VRInstanceSettings settings = VRInstanceSettings.load(gameDir);
+        // Instances made in the VR menu get their mods from the menu, for any version it offers
+        if (settings.menuMods) {
+            VRMode.applyVivecraftConfig(gameDir);
+            return;
+        }
+
         VRModList modList = loadModList(context);
         VRModList.Version mods = modList.find(minecraftVersion);
         if (mods == null) {
             throw new IOException(context.getString(R.string.vr_no_mod_set, minecraftVersion));
         }
 
-        MinecraftProfile profile = LauncherProfiles.getCurrentProfile();
-        File gameDir = Tools.getGameDirPath(profile);
         File modsDir = new File(gameDir, "mods");
         if (!modsDir.isDirectory() && !modsDir.mkdirs()) throw new IOException("Failed to create " + modsDir);
 
@@ -78,7 +85,7 @@ public class VRModInstaller {
         List<VRModList.Mod> wanted = new ArrayList<>();
         Set<String> coreSlugs = new HashSet<>();
         if (mods.coreMods != null) for (VRModList.Mod mod : mods.coreMods) { wanted.add(mod); coreSlugs.add(mod.slug); }
-        if (mods.defaultMods != null) for (VRModList.Mod mod : mods.defaultMods) wanted.add(mod);
+        if (settings.defaultMods && mods.defaultMods != null) for (VRModList.Mod mod : mods.defaultMods) wanted.add(mod);
 
         // Drop mods we installed that the list no longer has (e.g. another Minecraft version's set)
         Set<String> wantedSlugs = new HashSet<>();
@@ -124,17 +131,29 @@ public class VRModInstaller {
         }
 
         writeState(modsDir, state);
+
+        // Mods and resource packs added from the VR menu
+        for (VRInstanceSettings.ExtraProject project : settings.extraProjects) {
+            File target = project.getTarget(gameDir);
+            if (target.exists()) continue;
+            ProgressLayout.setProgress(ProgressLayout.DOWNLOAD_MINECRAFT, 100,
+                    R.string.vr_mods_downloading, project.slug + " " + project.version);
+            File parent = target.getParentFile();
+            if (parent != null && !parent.isDirectory() && !parent.mkdirs()) throw new IOException("Failed to create " + parent);
+            download(project.download_link, target);
+        }
+
         VRMode.applyVivecraftConfig(gameDir);
     }
 
     /** The vanilla version a (possibly modded) version id is based on */
-    private static String getMinecraftVersion(String versionId) throws IOException {
+    static String getMinecraftVersion(String versionId) throws IOException {
         File json = new File(Tools.DIR_HOME_VERSION, versionId + "/" + versionId + ".json");
         JMinecraftVersionList.Version version = Tools.GLOBAL_GSON.fromJson(Tools.read(json), JMinecraftVersionList.Version.class);
         return version.inheritsFrom != null ? version.inheritsFrom : versionId;
     }
 
-    private static VRModList loadModList(Context context) throws IOException {
+    public static VRModList loadModList(Context context) throws IOException {
         String name = LauncherPreferences.PREF_VR_DEV_MODS ? "devmods.json" : "mods.json";
         File cache = new File(Tools.DIR_DATA, "vr/" + name);
         try {

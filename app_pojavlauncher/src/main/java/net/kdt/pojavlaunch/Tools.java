@@ -74,6 +74,7 @@ import net.kdt.pojavlaunch.utils.JREUtils;
 import net.kdt.pojavlaunch.utils.JSONUtils;
 import net.kdt.pojavlaunch.utils.MCOptionUtils;
 import net.kdt.pojavlaunch.utils.OldVersionsUtils;
+import net.kdt.pojavlaunch.vr.VRMode;
 import net.kdt.pojavlaunch.value.DependentLibrary;
 import net.kdt.pojavlaunch.value.MinecraftAccount;
 import net.kdt.pojavlaunch.value.MinecraftLibraryArtifact;
@@ -403,7 +404,7 @@ public final class Tools {
         return renderDistance > 7;
     }
 
-    public static void launchMinecraft(final AppCompatActivity activity, MinecraftAccount minecraftAccount,
+    public static void launchMinecraft(final FragmentActivity activity, MinecraftAccount minecraftAccount,
                                        MinecraftProfile minecraftProfile, String versionId, int versionJavaRequirement) throws Throwable {
         int freeDeviceMemory = getFreeDeviceMemory(activity);
         int localeString;
@@ -416,7 +417,8 @@ public final class Tools {
             localeString = R.string.memory_warning_msg;
         }
 
-        if(LauncherPreferences.PREF_RAM_ALLOCATION > freeDeviceMemory) {
+        // A dialog can't be seen in VR and would block the launch forever
+        if(LauncherPreferences.PREF_RAM_ALLOCATION > freeDeviceMemory && !VRMode.sRunningInVR) {
             int finalDeviceMemory = freeDeviceMemory;
             LifecycleAwareAlertDialog.DialogCreator dialogCreator = (dialog, builder) ->
                 builder.setMessage(activity.getString(localeString, finalDeviceMemory, LauncherPreferences.PREF_RAM_ALLOCATION))
@@ -651,6 +653,11 @@ public final class Tools {
             };
             Logger.addLogListener(oldL4JMitigationLogListener);
         }
+    }
+
+    /** Authority of FolderProvider; follows the app Amlib is built into (see its manifest entry) */
+    public static String getStorageProviderAuthority(Context context) {
+        return context.getPackageName() + ".scoped.gamefolder";
     }
 
     public static File getGameDirPath(@NonNull MinecraftProfile minecraftProfile){
@@ -1684,7 +1691,7 @@ public final class Tools {
      * @param share whether to open a "Share" or an "Open" dialog.
      */
     public static void openPath(Context context, File file, boolean share) {
-        Uri contentUri = DocumentsContract.buildDocumentUri(context.getString(R.string.storageProviderAuthorities), file.getAbsolutePath());
+        Uri contentUri = DocumentsContract.buildDocumentUri(getStorageProviderAuthority(context), file.getAbsolutePath());
         String mimeType = getMimeType(file);
         Intent intent = new Intent();
         if(share) {

@@ -5,6 +5,59 @@ plugins{
     id 'com.android.library' version '9.3.1' apply false
 }
 
+
+// Version name shared by Amlib (crash reports, logs) and the apps built from it
+ext.amlibVersionName = {
+    // Get the last version tag, as well as the short head of the last commit
+    String TAG = ""
+    String semVer = "1.1.7"
+    // Used by the fallback for github actions
+    String TAG_PART_COMMIT = ""
+    String TAG_STRING
+
+    try {
+        TAG = providers.exec {
+            commandLine 'git', 'describe', '--tags'
+            ignoreExitValue = true
+        }.getStandardOutput().asText.get()
+    } catch (Exception e) {
+        e.printStackTrace()
+    }
+
+    // Fallback for action builds
+    if (TAG.toString().trim().isEmpty()) {
+        try {
+            TAG_PART_COMMIT = providers.exec {
+                commandLine 'git', 'describe', '--always', '--tags'
+                ignoreExitValue = true
+            }.getStandardOutput().asText.get()
+        } catch (Exception ignored) {
+        }
+    }
+
+
+    if(!TAG.isBlank()){
+        TAG_STRING = TAG
+    }else {
+        if(TAG_PART_COMMIT.isBlank()){
+             //Fallback no repo
+            return ("LOCAL-" + "${new Date().format('yyyyMMdd')}")
+        }else {
+            // Used by github actions
+            TAG_STRING =  'amethyst-legacy-' + "${new Date().format('yyyyMMdd')}" + "-" + TAG_PART_COMMIT.toString().trim()
+        }
+
+    }
+
+    def isRelease = project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+    if(!isRelease){
+        return TAG_STRING.trim().replace("-g", "-") + "-" + "debug-" + semVer
+    }else {
+        return TAG_STRING.trim().replace("-g", "-") + "-" + "release-" + semVer
+    }
+}
+
+
 static void hashFileWithDigest(File fileToHash, MessageDigest digest){
     fileToHash.withInputStream { is ->
         byte[] buffer = new byte[8192]

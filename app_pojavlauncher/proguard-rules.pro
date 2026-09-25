@@ -26,5 +26,5 @@
 
 
 
-# Read and written by libvloader through JNI
--keep class net.kdt.pojavlaunch.vr.VLoader { *; }
+# Used by name over JNI: VLoader by libvloader, XRApi and its data classes by the AmethystXR VR menu
+-keep class net.kdt.pojavlaunch.vr.** { *; }

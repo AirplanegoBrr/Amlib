@@ -16,6 +16,7 @@ import android.view.View;
 
 import androidx.core.content.ContextCompat;
 
+import net.kdt.pojavlaunch.AmlibCore;
 import net.kdt.pojavlaunch.BaseActivity;
 import net.kdt.pojavlaunch.JMinecraftVersionList;
 import net.kdt.pojavlaunch.Logger;
@@ -49,8 +50,6 @@ import fr.spse.gamepad_remapper.RemapperView;
  */
 public class VRGameActivity extends BaseActivity implements ServiceConnection {
     private static final String TAG = "VRGameActivity";
-    /** The renderer QuestCraft uses; Vivecraft needs an OpenGL ES context for XR_KHR_opengl_es_enable */
-    private static final String VR_RENDERER = "opengles_mobileglues";
 
     private MinecraftProfile mProfile;
     private String mVersionId;
@@ -61,6 +60,8 @@ public class VRGameActivity extends BaseActivity implements ServiceConnection {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Runs in its own process, which the app embedding Amlib doesn't set up
+        AmlibCore.init(this);
         super.onCreate(savedInstanceState);
         VRMode.sRunningInVR = true;
 
@@ -72,18 +73,6 @@ public class VRGameActivity extends BaseActivity implements ServiceConnection {
         mProfile = LauncherProfiles.getCurrentProfile();
         String version = getIntent().getStringExtra(INTENT_MINECRAFT_VERSION);
         mVersionId = version == null ? mProfile.lastVersionId : version;
-        File gameDir = Tools.getGameDirPath(mProfile);
-
-        try {
-            File latestLogFile = new File(Tools.DIR_GAME_HOME, "latestlog.txt");
-            if(!latestLogFile.exists() && !latestLogFile.createNewFile())
-                throw new IOException("Failed to create a new log file");
-            Logger.begin(latestLogFile.getAbsolutePath());
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to open the game log", e);
-        }
-
-        setupWindow(gameDir);
 
         mInputManager = new RemapperManager(this, new RemapperView.Builder(null)
                 .remapA(true).remapB(true).remapX(true).remapY(true)
@@ -101,17 +90,6 @@ public class VRGameActivity extends BaseActivity implements ServiceConnection {
         bindService(gameServiceIntent, this, 0);
     }
 
-    /** Give Minecraft a fixed-size main window; it is never shown, only the eye buffers are */
-    private void setupWindow(File gameDir) {
-        CallbackBridge.windowWidth = CallbackBridge.physicalWidth = VRMode.WINDOW_WIDTH;
-        CallbackBridge.windowHeight = CallbackBridge.physicalHeight = VRMode.WINDOW_HEIGHT;
-        MCOptionUtils.load(gameDir.getAbsolutePath());
-        MCOptionUtils.set("fullscreen", "false");
-        MCOptionUtils.set("overrideWidth", String.valueOf(VRMode.WINDOW_WIDTH));
-        MCOptionUtils.set("overrideHeight", String.valueOf(VRMode.WINDOW_HEIGHT));
-        MCOptionUtils.save();
-    }
-
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         mServiceBinder = (GameService.LocalBinder) service;
@@ -121,58 +99,33 @@ public class VRGameActivity extends BaseActivity implements ServiceConnection {
             try {
                 runCraft();
             } catch (Throwable e) {
-                Tools.showErrorRemote(e);
+                onLaunchFailed(e);
             }
         }, "JVM Main thread").start();
+    }
+
+    /**
+     * An error dialog can't be seen in immersive VR, so log the error and go back to the app
+     * embedding Amlib (the VR menu) instead of leaving the player in an empty loading room.
+     */
+    private void onLaunchFailed(Throwable e) {
+        Log.e(TAG, "Failed to start the game", e);
+        Logger.appendToLog("Failed to start the game: " + Log.getStackTraceString(e));
+        runOnUiThread(() -> {
+            Intent menu = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            if (menu != null) startActivity(menu.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            finish();
+            // Ends this :game process, so the next Play starts from scratch
+            startService(new Intent(this, GameService.class).putExtra("kill", true));
+        });
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {}
 
     private void runCraft() throws Throwable {
-        JMinecraftVersionList.Version versionInfo = Tools.getVersionInfo(mVersionId);
-        CallbackBridge.nativeSetUseInputStackQueue(versionInfo.arguments != null);
-
-        if(!VR_RENDERER.equals(Tools.LOCAL_RENDERER)) {
-            Log.i(TAG, "VR uses " + VR_RENDERER + " instead of the profile renderer " + mProfile.pojavRendererName);
-        }
-        Tools.LOCAL_RENDERER = VR_RENDERER;
-        LauncherPreferences.writeMGRendererSettings();
-
-        MinecraftAccount account = PojavProfile.getCurrentProfileContent(this, null);
-        Logger.appendToLog("--------- Starting game in VR with Launcher Debug!");
-        Tools.printLauncherInfo(mVersionId, Tools.isValidString(mProfile.javaArgs) ? mProfile.javaArgs : LauncherPreferences.PREF_CUSTOM_JAVA_ARGS, Tools.getTotalDeviceMemory(this));
-        JREUtils.redirectAndPrintJRELog();
-        LauncherProfiles.load();
-        int requiredJavaVersion = versionInfo.javaVersion != null ? versionInfo.javaVersion.majorVersion : 8;
-        Tools.launchMinecraft(this, account, mProfile, mVersionId, requiredJavaVersion);
+        VRMode.runGame(this, mProfile, mVersionId);
         Tools.runOnUiThread(() -> mServiceBinder.isActive = false);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_FOCUSED, 1);
-        CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_HOVERED, 1);
-    }
-
-    @Override
-    protected void onPause() {
-        CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_FOCUSED, 0);
-        CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_HOVERED, 0);
-        super.onPause();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_VISIBLE, 1);
-    }
-
-    @Override
-    protected void onStop() {
-        CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_VISIBLE, 0);
-        super.onStop();
     }
 
     @Override

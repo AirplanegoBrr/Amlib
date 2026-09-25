@@ -530,4 +530,6 @@
     <string name="device_login_open_link">Open the link here</string>
     <string name="device_login_started">Signing in…</string>
     <string name="device_login_failed">Sign-in failed: %s</string>
+    <!-- Overridden by the app using Amlib -->
+    <string name="application_package" translatable="false">org.angelauramc.amethyst</string>
 </resources>

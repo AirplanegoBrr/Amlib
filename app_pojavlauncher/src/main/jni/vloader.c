@@ -7,9 +7,9 @@
 //
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <jni.h>
 #include <EGL/egl.h>
-#include <openxr/openxr.h>
 #include "environ/environ.h"
 #include "log.h"
 
@@ -85,4 +85,15 @@ Java_net_kdt_pojavlaunch_vr_VLoader_nativeSetAndroidInitInfo(JNIEnv* env, jclass
     if (pojav_environ->vrLoaderClass == NULL) {
         pojav_environ->vrLoaderClass = (*env)->NewGlobalRef(env, clazz);
     }
+}
+
+// OpenXR handles are 64 bits wide and XrResult is an int32_t; that is all this needs, so it
+// doesn't pull in the OpenXR headers
+typedef int32_t (*host_xr_handle_fn)(uint64_t handle);
+
+JNIEXPORT jint JNICALL
+Java_net_kdt_pojavlaunch_vr_VLoader_nativeCallHostXr(JNIEnv* env, jclass clazz, jlong function, jlong handle) {
+    int32_t result = ((host_xr_handle_fn) (intptr_t) function)((uint64_t) handle);
+    LOGI("VLoader: host OpenXR call returned %d", result);
+    return result;
 }

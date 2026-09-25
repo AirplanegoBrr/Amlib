@@ -145,7 +145,7 @@ public class FolderProvider extends DocumentsProvider {
         }
         BASE_DIR = new File(Tools.DIR_GAME_HOME);
         mContentResolver = getContext().getContentResolver();
-        mStorageProviderAuthortiy = getContext().getString(R.string.storageProviderAuthorities);
+        mStorageProviderAuthortiy = Tools.getStorageProviderAuthority(getContext());
         return true;
     }
 
