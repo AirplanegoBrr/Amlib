@@ -63,11 +63,6 @@
           "download_link": "https://cdn.modrinth.com/data/fQEb0iXm/versions/O9LmWYR7/krypton-0.2.10.jar"
         },
         {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.21.10-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/n7Kvch7B/voicechat-fabric-1.21.10-2.6.12.jar"
-        },
-        {
           "slug": "BadOptimizations",
           "version": "2.4.1",
           "download_link": "https://cdn.modrinth.com/data/g96Z4WVZ/versions/dOFYYhIv/BadOptimizations-2.4.1-1.21.10.jar"
@@ -130,11 +125,6 @@
           "download_link": "https://cdn.modrinth.com/data/fQEb0iXm/versions/neW85eWt/krypton-0.2.9.jar"
         },
         {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.21.8-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/NolGXq9F/voicechat-fabric-1.21.8-2.6.12.jar"
-        },
-        {
           "slug": "BadOptimizations",
           "version": "2.4.1",
           "download_link": "https://cdn.modrinth.com/data/g96Z4WVZ/versions/9s4ZpGFq/BadOptimizations-2.4.1-1.21.6-21.8.jar"
@@ -195,11 +185,6 @@
           "slug": "Krypton",
           "version": "0.2.9",
           "download_link": "https://cdn.modrinth.com/data/fQEb0iXm/versions/neW85eWt/krypton-0.2.9.jar"
-        },
-        {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.21.5-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/jISwEWN6/voicechat-fabric-1.21.5-2.6.12.jar"
         },
         {
           "slug": "BadOptimizations",
@@ -269,11 +254,6 @@
           "download_link": "https://cdn.modrinth.com/data/fQEb0iXm/versions/Acz3ttTp/krypton-0.2.8.jar"
         },
         {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.21.4-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/1U3a2v2o/voicechat-fabric-1.21.4-2.6.12.jar"
-        },
-        {
           "slug": "BadOptimizations",
           "version": "2.4.1",
           "download_link": "https://cdn.modrinth.com/data/g96Z4WVZ/versions/KsC2V6FQ/BadOptimizations-2.4.1-1.21.2-21.5.jar"
@@ -324,11 +304,6 @@
           "slug": "MoreCulling",
           "version": "1.0.7",
           "download_link": "https://cdn.modrinth.com/data/51shyZVL/versions/y4J2jK6V/moreculling-fabric-1.21.1-1.0.7.jar"
-        },
-        {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.21.1-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/a5dpsZGN/voicechat-fabric-1.21.1-2.6.12.jar"
         },
         {
           "slug": "Cloth-Config",
@@ -403,11 +378,6 @@
           "download_link": "https://cdn.modrinth.com/data/9s6osm5g/versions/g0uTATyM/cloth-config-14.0.139-fabric.jar"
         },
         {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.20.6-2.5.22",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/FGDBZ2bv/voicechat-fabric-1.20.6-2.5.22.jar"
-        },
-        {
           "slug": "EntityCulling",
           "version": "1.9.5",
           "download_link": "https://cdn.modrinth.com/data/NNAgCjsB/versions/GeJqcFN8/entityculling-fabric-1.9.5-mc1.20.6.jar"
@@ -443,11 +413,6 @@
           "slug": "ImmediatelyFast",
           "version": "1.5.4+1.20.4-fabric",
           "download_link": "https://cdn.modrinth.com/data/5ZwdcRci/versions/Us8JqrP9/ImmediatelyFast-Fabric-1.5.4%2B1.20.4.jar"
-        },
-        {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.20.4-2.5.22",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/VRNP2Gm6/voicechat-fabric-1.20.4-2.5.22.jar"
         },
         {
           "slug": "ModernFix",
@@ -522,11 +487,6 @@
           "download_link": "https://cdn.modrinth.com/data/5ZwdcRci/versions/Us8JqrP9/ImmediatelyFast-Fabric-1.5.4%2B1.20.4.jar"
         },
         {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.20.1-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/9Qnm9xU7/voicechat-fabric-1.20.1-2.6.12.jar"
-        },
-        {
           "slug": "ModernFix",
           "version": "5.24.0",
           "download_link": "https://github.com/embeddedt/ModernFix/releases/download/5.24.0%2B1.20.1/modernfix-fabric-5.24.0+mc1.20.1.jar"
@@ -548,11 +508,6 @@
         }
       ],
       "defaultMods": [
-        {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.19.4-2.5.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/CUKg92Gx/voicechat-fabric-1.19.4-2.5.12.jar"
-        },
         {
           "slug": "Lithium",
           "version": "mc1.19.4-0.11.1",
@@ -634,11 +589,6 @@
           "slug": "LazyDFU",
           "version": "0.1.3",
           "download_link": "https://cdn.modrinth.com/data/hvFnDODi/versions/0.1.3/lazydfu-0.1.3.jar"
-        },
-        {
-          "slug": "Simple-Voice-Chat",
-          "version": "fabric-1.19.2-2.6.12",
-          "download_link": "https://cdn.modrinth.com/data/9eGKb6K1/versions/sWGTfN08/voicechat-fabric-1.19.2-2.6.12.jar"
         },
         {
           "slug": "Lithium",
