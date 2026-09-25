@@ -131,6 +131,14 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         return false;
     };
 
+    /* Triggered when a device code sign-in finished, with the Microsoft refresh token */
+    private final ExtraListener<String> mMicrosoftDeviceLoginListener = (key, value) -> {
+        mLoginBarPaint.setColor(getResources().getColor(R.color.minebutton_color));
+        new MicrosoftBackgroundLogin(true, value).performLogin(
+                mProgressListener, mDoneListener, mErrorListener);
+        return false;
+    };
+
     /* Triggered when we need to perform mojang login */
     private final ExtraListener<String[]> mMojangLoginListener = (key, value) -> {
         if(value[1].isEmpty()){ // Test mode
@@ -161,6 +169,7 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
 
         ExtraCore.addExtraListener(ExtraConstants.MOJANG_LOGIN_TODO, mMojangLoginListener);
         ExtraCore.addExtraListener(ExtraConstants.MICROSOFT_LOGIN_TODO, mMicrosoftLoginListener);
+        ExtraCore.addExtraListener(ExtraConstants.MICROSOFT_DEVICE_LOGIN_TODO, mMicrosoftDeviceLoginListener);
     }
 
 
