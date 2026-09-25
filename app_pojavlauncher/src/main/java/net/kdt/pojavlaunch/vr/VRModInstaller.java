@@ -54,6 +54,30 @@ public class VRModInstaller {
     }
 
     /**
+     * QuestCraft's settings for the Quest (assets/vr/defaults, from Pojlib): render and simulation
+     * distance 4, no vsync, fast graphics, and its Sodium, ImmediatelyFast, More Culling, ModernFix
+     * and Vivecraft configs. File name and the folder it goes in, relative to the game directory.
+     */
+    private static final String[][] DEFAULT_CONFIGS = {
+            {"options.txt", ""},
+            {"sodium-options.json", "config"},
+            {"immediatelyfast.json", "config"},
+            {"moreculling.toml", "config"},
+            {"modernfix-mixins.properties", "config"},
+            {"vivecraft-client-config.json", "config"},
+    };
+    /**
+     * Writes the default configs an instance doesn't have yet, like Pojlib does on install. Files
+     * that already exist are left alone, so settings players change are kept. The window size and
+     * Vivecraft settings VRMode applies on every launch still override theirs.
+     */
+    private static void applyDefaultConfigs(Context context, File gameDir) throws IOException {
+        for (String[] config : DEFAULT_CONFIGS) {
+            Tools.copyAssetFile(context, "vr/defaults/" + config[0], new File(gameDir, config[1]).getAbsolutePath(), false);
+        }
+    }
+
+    /**
      * Install or update the VR mods for {@code versionId} (the profile's version, e.g. a Fabric loader id).
      * Runs on the download thread, before the game starts.
      */
@@ -66,6 +90,7 @@ public class VRModInstaller {
         MinecraftProfile profile = LauncherProfiles.getCurrentProfile();
         File gameDir = Tools.getGameDirPath(profile);
         VRInstanceSettings settings = VRInstanceSettings.load(gameDir);
+        applyDefaultConfigs(context, gameDir);
         // Instances made in the VR menu get their mods from the menu, for any version it offers
         if (settings.menuMods) {
             VRMode.applyVivecraftConfig(gameDir);
